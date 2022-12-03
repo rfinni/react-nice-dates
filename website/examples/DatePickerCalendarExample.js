@@ -33,7 +33,13 @@ export default function DatePickerCalendarExample() {
     <Example code={code}>
       <p>Selected date: {date ? format(date, 'dd MMM yyyy', { locale: enGB }) : 'none'}.</p>
 
-      <DatePickerCalendar date={date} onDateChange={setDate} locale={enGB} />
+      <DatePickerCalendar
+        minimumDate={new Date(2022, 9, 28)}
+        maximumDate={new Date(2022, 10, 26)}
+        onDateChange={setDate}
+        containMinAndMaxDates
+        hideNavigation
+      />
     </Example>
   )
 }

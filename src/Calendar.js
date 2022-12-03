@@ -18,7 +18,9 @@ export default function Calendar({
   onDayHover,
   onDayClick,
   weekdayFormat,
-  touchDragEnabled
+  touchDragEnabled,
+  containMinAndMaxDates,
+  hideNavigation
 }) {
   const [month, setMonth] = useControllableState(receivedMonth, onMonthChange, startOfMonth(new Date()))
 
@@ -29,13 +31,15 @@ export default function Calendar({
 
   return (
     <div>
-      <CalendarNavigation
-        locale={locale}
-        minimumDate={minimumDate}
-        maximumDate={maximumDate}
-        month={month}
-        onMonthChange={setMonth}
-      />
+      {!hideNavigation && (
+        <CalendarNavigation
+          locale={locale}
+          minimumDate={minimumDate}
+          maximumDate={maximumDate}
+          month={month}
+          onMonthChange={setMonth}
+        />
+      )}
 
       <CalendarWeekHeader locale={locale} weekdayFormat={weekdayFormat}/>
 
@@ -48,6 +52,7 @@ export default function Calendar({
         onDayHover={onDayHover}
         onDayClick={onDayClick}
         touchDragEnabled={touchDragEnabled}
+        containMinAndMaxDates={containMinAndMaxDates}
       />
     </div>
   )
@@ -64,5 +69,7 @@ Calendar.propTypes = {
   onDayHover: func,
   onDayClick: func,
   weekdayFormat: string,
-  touchDragEnabled: bool
+  touchDragEnabled: bool,
+  containMinAndMaxDates: bool,
+  hideNavigation: bool
 }
