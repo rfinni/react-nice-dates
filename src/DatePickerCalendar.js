@@ -1,6 +1,6 @@
 import React from 'react'
 import { bool, instanceOf, func, object, objectOf, string } from 'prop-types'
-import { isSameDay, startOfMonth } from 'date-fns'
+import { isSameDay, startOfWeek, startOfMonth } from 'date-fns'
 import { isSelectable, mergeModifiers, setTime } from './utils'
 import useControllableState from './useControllableState'
 import Calendar from './Calendar'
@@ -16,11 +16,21 @@ export default function DatePickerCalendar({
   modifiers: receivedModifiers,
   modifiersClassNames,
   weekdayFormat,
-  touchDragEnabled
+  touchDragEnabled,
+  containMinAndMaxDates,
+  hideNavigation
 }) {
+  let initialStartDate
+
+  if (containMinAndMaxDates) {
+    initialStartDate = startOfWeek(minimumDate)
+  } else {
+    initialStartDate = startOfMonth(selectedDate || new Date())
+  }
+
   const isSelected = date => isSameDay(date, selectedDate) && isSelectable(date, { minimumDate, maximumDate })
   const modifiers = mergeModifiers({ selected: isSelected, disabled: isSelected }, receivedModifiers)
-  const [month, setMonth] = useControllableState(receivedMonth, onMonthChange, startOfMonth(selectedDate || new Date()))
+  const [month, setMonth] = useControllableState(receivedMonth, onMonthChange, initialStartDate)
 
   const handleDateChange = date => {
     onDateChange(selectedDate ? setTime(date, selectedDate) : date)
@@ -38,6 +48,8 @@ export default function DatePickerCalendar({
       modifiersClassNames={modifiersClassNames}
       weekdayFormat={weekdayFormat}
       touchDragEnabled={touchDragEnabled}
+      containMinAndMaxDates={containMinAndMaxDates}
+      hideNavigation={hideNavigation}
     />
   )
 }
@@ -53,5 +65,7 @@ DatePickerCalendar.propTypes = {
   modifiers: objectOf(func),
   modifiersClassNames: objectOf(string),
   weekdayFormat: string,
-  touchDragEnabled: bool
+  touchDragEnabled: bool,
+  containMinAndMaxDates: bool,
+  hideNavigation: bool
 }

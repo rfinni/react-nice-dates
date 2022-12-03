@@ -22,10 +22,13 @@ const rowsInMonth = (date, locale) => rowsBetweenDates(startOfMonth(date), endOf
 const getStartDate = (date, locale) => startOfWeek(startOfMonth(date), { locale })
 const getEndDate = (date, locale) => endOfWeek(addWeeks(endOfMonth(date), 6 - rowsInMonth(date, locale)), { locale })
 
-const createInitialState = (currentMonth, locale) => {
+const createInitialState = (currentMonth, locale, containMinAndMaxDates) => {
+  const endDate = containMinAndMaxDates ? new Date() : getEndDate(currentMonth, locale)
+  const startDate = containMinAndMaxDates ? startOfWeek(currentMonth, { locale }) : startOfWeek(startOfMonth(currentMonth), { locale })
+
   return {
-    startDate: getStartDate(currentMonth, locale),
-    endDate: getEndDate(currentMonth, locale),
+    startDate,
+    endDate,
     cellHeight: 0,
     isWide: false,
     lastCurrentMonth: currentMonth,
@@ -92,11 +95,12 @@ const reducer = (state, action) => {
   }
 }
 
-export default function useGrid({ locale, month: currentMonth, onMonthChange, transitionDuration, touchDragEnabled }) {
+export default function useGrid({ locale, month: currentMonth, onMonthChange, transitionDuration, touchDragEnabled, containMinAndMaxDates }) {
   const timeoutRef = useRef()
   const containerElementRef = useRef()
   const initialDragPositionRef = useRef(0)
-  const [state, dispatch] = useReducer(reducer, createInitialState(currentMonth, locale))
+
+  const [state, dispatch] = useReducer(reducer, createInitialState(currentMonth, locale, containMinAndMaxDates))
   const { startDate, endDate, cellHeight, lastCurrentMonth, offset, origin, transition, isWide } = state
 
   useLayoutEffect(() => {

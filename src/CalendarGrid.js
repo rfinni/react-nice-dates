@@ -1,6 +1,6 @@
 import React from 'react'
 import { bool, instanceOf, func, number, object, objectOf, string } from 'prop-types'
-import { eachDayOfInterval, isSameMonth, lightFormat, startOfMonth } from 'date-fns'
+import { eachDayOfInterval, isSameMonth, lightFormat, startOfMonth, startOfWeek } from 'date-fns'
 import classNames from 'classnames'
 import useGrid from './useGrid'
 import { ORIGIN_BOTTOM, ORIGIN_TOP } from './constants'
@@ -25,9 +25,18 @@ export default function CalendarGrid({
   onDayHover,
   onDayClick,
   transitionDuration,
-  touchDragEnabled
+  touchDragEnabled,
+  containMinAndMaxDates
 }) {
-  const grid = useGrid({ locale, month: startOfMonth(month), onMonthChange, transitionDuration, touchDragEnabled })
+  let monthStartValue
+
+  if (containMinAndMaxDates) {
+    monthStartValue = startOfWeek(month)
+  } else {
+    monthStartValue = startOfMonth(month)
+  }
+
+  const grid = useGrid({ locale, month: monthStartValue, onMonthChange, transitionDuration, touchDragEnabled, containMinAndMaxDates })
   const { startDate, endDate, cellHeight, containerElementRef, isWide, offset, origin, transition } = grid
 
   const days = eachDayOfInterval({
@@ -82,11 +91,13 @@ CalendarGrid.propTypes = {
   onDayHover: func,
   onDayClick: func,
   transitionDuration: number.isRequired,
-  touchDragEnabled: bool
+  touchDragEnabled: bool,
+  containMinAndMaxDates: bool
 }
 
 CalendarGrid.defaultProps = {
   modifiers: {},
   transitionDuration: 500,
-  touchDragEnabled: true
+  touchDragEnabled: true,
+  containMinAndMaxDates: false
 }
